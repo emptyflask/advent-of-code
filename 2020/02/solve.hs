@@ -1,29 +1,51 @@
-import           Control.Applicative
-import           Data.Either         (rights)
+import           Data.Either (rights)
+import           Data.Maybe  (fromMaybe)
 import           Text.Parsec
 
-data Record = Record { reqs :: [Requirement], pass :: String } deriving Show
-data Requirement = Requirement Range Char deriving Show
-type Range = (Int, Int)
+data Record = Record { reqs :: [Requirement], pass :: String }
+instance Show Record where
+  show r = (unwords $ show <$> reqs r) ++ ": " ++ (pass r)
 
-type Parser a = Parsec String () a
+data Requirement = Requirement Range Char
+instance Show Requirement where
+  show (Requirement (a,b) c) = (show a) ++ "-" ++ (show b) ++ " " ++ (show c)
+
+type Range = (Int, Int)
+type Validator = String -> Requirement -> Bool
 
 main :: IO ()
 main = do
   input <- readFile "input.txt"
-  let parsed = parse record "" <$> lines input
-  let records = validate <$> rights parsed
-  print $ "Part 1: " <> show (length . rights $ records)
+  let records = rights $ parse record "" <$> lines input
+  print $ "Part 1: " <> show (solve isValid1 records)
+  print $ "Part 2: " <> show (solve isValid2 records)
 
-validate :: Record -> Either String Record
-validate rec@Record{reqs=rs, pass=p} =
-  if all (isValid p) rs then Right rec else Left "invalid"
+solve :: Validator -> [Record] -> Int
+solve v rs = length . rights $ validate v <$> rs
 
-isValid :: String -> Requirement -> Bool
-isValid s (Requirement r c) = inRange r $ length matching
+validate :: Validator -> Record -> Either Record Record
+validate validator rec@Record{reqs=rs, pass=p} =
+  if all (validator p) rs
+     then Right rec
+     else Left rec
+
+isValid1 :: Validator
+isValid1 s (Requirement r c) = inRange r $ length matching
   where
     matching = filter (== c) s
     inRange (f,l) n = f <= n && n <= l
+
+isValid2 :: Validator
+isValid2 s (Requirement (a,b) c) =
+  fromMaybe False first `xor`
+  fromMaybe False second
+  where
+    first  = (== c) <$> s !!? (a-1)
+    second = (== c) <$> s !!? (b-1)
+
+-- PARSING --
+
+type Parser a = Parsec String () a
 
 record :: Parser Record
 record = do
@@ -45,3 +67,15 @@ range = do
   char '-'
   last <- many1 digit
   return (read first, read last)
+
+-- THINGS THAT SHOULD BE STANDARD --
+
+-- safe version of (!!)
+(!!?) :: [a] -> Int -> Maybe a
+(!!?) xs n     | n < 0 =  Nothing
+(!!?) [] _     =  Nothing
+(!!?) (x:_)  0 =  Just x
+(!!?) (_:xs) n =  xs !!? (n-1)
+
+xor :: Bool -> Bool -> Bool
+x `xor` y = (x || y) && (not (x && y))
