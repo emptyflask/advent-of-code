@@ -1,14 +1,13 @@
 import           Data.Either (rights)
-import           Data.Maybe  (fromMaybe)
 import           Text.Parsec
 
 data Record = Record { reqs :: [Requirement], pass :: String }
 instance Show Record where
-  show r = (unwords $ show <$> reqs r) ++ ": " ++ (pass r)
+  show r = unwords ( show <$> reqs r) ++ ": " ++ pass r
 
 data Requirement = Requirement Range Char
 instance Show Requirement where
-  show (Requirement (a,b) c) = (show a) ++ "-" ++ (show b) ++ " " ++ (show c)
+  show (Requirement (a,b) c) = show a ++ "-" ++ show b ++ " " ++ show c
 
 type Range = (Int, Int)
 type Validator = String -> Requirement -> Bool
@@ -37,8 +36,8 @@ isValid1 s (Requirement r c) = inRange r $ length matching
 
 isValid2 :: Validator
 isValid2 s (Requirement (a,b) c) =
-  fromMaybe False first `xor`
-  fromMaybe False second
+  (Just True == first) `xor`
+  (Just True == second)
   where
     first  = (== c) <$> s !!? (a-1)
     second = (== c) <$> s !!? (b-1)
@@ -78,4 +77,4 @@ range = do
 (!!?) (_:xs) n =  xs !!? (n-1)
 
 xor :: Bool -> Bool -> Bool
-x `xor` y = (x || y) && (not (x && y))
+x `xor` y = (x || y) && not (x && y)
