@@ -6,7 +6,7 @@ type Slope = Rational
 
 main :: IO ()
 main = do
-  input <- readFile "input.txt"
+  input <- readFile "./03/input.txt"
   let w = lines input
   print $ "Part 1: " <> show (solve1 w)
   print $ "Part 2: " <> show (solve2 w)

@@ -14,7 +14,7 @@ type Validator = String -> Requirement -> Bool
 
 main :: IO ()
 main = do
-  input <- readFile "input.txt"
+  input <- readFile "./02/input.txt"
   let records = rights $ parse record "" <$> lines input
   print $ "Part 1: " <> show (solve isValid1 records)
   print $ "Part 2: " <> show (solve isValid2 records)

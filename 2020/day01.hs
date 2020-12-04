@@ -1,6 +1,6 @@
 main :: IO ()
 main = do
-  input <- readFile "input.txt"
+  input <- readFile "./01/input.txt"
   let list = read <$> lines input
   print $ "Part 1: " <> (show $ solve1 list)
   print $ "Part 2: " <> (show $ solve2 list)
