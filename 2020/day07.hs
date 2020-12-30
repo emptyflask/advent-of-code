@@ -1,10 +1,10 @@
-import           Data.List          (intercalate)
-import qualified Data.Map           as M
+import           Data.List          (nub)
+import qualified Data.Map.Strict    as M
+import           Data.Maybe         (fromMaybe)
 import           Text.Parsec
 import           Text.Parsec.String
 
 type Bags = M.Map Color Contents
--- type Bags = [(Color, Contents)]
 type Color = String
 type Contents = [BagCount]
 type BagCount = (Int, Color)
@@ -14,11 +14,33 @@ main = do
   result <- parseFromFile bags "./07/input.txt"
   case result of
     Left err    -> print err
-    Right input -> putStrLn $ "Part 1: " <> show input -- (solve1 input)
-  -- putStrLn $ "Part 2: " <> show (solve2 input)
+    Right input -> do
+      putStrLn $ "Part 1: " <> show (solve1 input)
+      -- putStrLn $ "Part 2: " <> show (solve2 input)
 
+
+-- How many bag colors can eventually contain at least one shiny gold bag?
 solve1 :: Bags -> Int
-solve1 input = undefined
+solve1 bags = length (containersOf "shiny gold") - 1
+  where
+    containersOf :: String -> [Color]
+    containersOf b = nub . concat . takeWhile (not . null) . iterate (>>= search) $ pure b
+
+    search c = fromMaybe [] (M.lookup c bags')
+    bags' = invert . removeCount $ bags
+
+    removeCount :: M.Map Color Contents -> M.Map Color [Color]
+    removeCount = M.map (map snd)
+
+    invert :: (Ord k, Ord v) => M.Map k [v] -> M.Map v [k]
+    invert m = M.fromListWith (++) pairs
+      where pairs = [(v, [k]) | (k, vs) <- M.toList m, v <- vs]
+
+
+-- How many individual bags are required inside your single shiny gold bag?
+solve2 :: Bags -> Int
+solve2 = undefined
+
 
 bags :: Parser Bags
 bags = do
@@ -49,4 +71,5 @@ bagCount = do
 color :: Parser Color
 color = do
   cs <- count 2 $ manyTill letter space
-  return $ intercalate " " cs
+  return $ unwords cs
+
