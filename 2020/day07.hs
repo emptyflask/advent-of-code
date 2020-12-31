@@ -16,7 +16,7 @@ main = do
     Left err    -> print err
     Right input -> do
       putStrLn $ "Part 1: " <> show (solve1 input)
-      -- putStrLn $ "Part 2: " <> show (solve2 input)
+      putStrLn $ "Part 2: " <> show (solve2 input)
 
 
 -- How many bag colors can eventually contain at least one shiny gold bag?
@@ -39,7 +39,10 @@ solve1 bags = length (containersOf "shiny gold") - 1
 
 -- How many individual bags are required inside your single shiny gold bag?
 solve2 :: Bags -> Int
-solve2 = undefined
+solve2 bags = bagCount (search "shiny gold") - 1
+  where
+    bagCount = foldr (\(n,col) count -> count + n * bagCount (search col)) 1
+    search c = fromMaybe [] (M.lookup c bags)
 
 
 bags :: Parser Bags
@@ -72,4 +75,3 @@ color :: Parser Color
 color = do
   cs <- count 2 $ manyTill letter space
   return $ unwords cs
-
