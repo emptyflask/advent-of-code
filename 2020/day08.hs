@@ -1,31 +1,65 @@
+import           Control.Arrow       (second)
 import           Control.Monad.State
+import           Data.Either         (rights)
+import           Data.Vector         (Vector, fromList, (!?), (//))
 
-type CpuState = (Log, Int)
 data Instruction = NOP Int | ACC Int | JMP Int deriving (Show)
-type Log = [Int]
+type Result = Either CpuState Int
+type CpuState = (Log, Int)
+type Log = [(Int, Instruction)]
 
 main :: IO ()
 main = do
   input <- readFile "./08/input.txt"
-  putStrLn $ "Part 1: " <> show (solve1 input)
+  let instructions = parse input
+  putStrLn $ "Part 1: " <> show (solve1 instructions)
+  putStrLn $ "Part 2: " <> show (solve2 instructions)
 
-solve1 :: String -> Int
-solve1 str = evalState (execute (parse str) 0) init
-  where
-    init = ([], 0)
+solve1 :: Vector Instruction -> Int
+solve1 ops = case eval ops of
+               Right i     -> i
+               Left (_, i) -> i
 
-execute :: [Instruction] -> Int -> State CpuState Int
-execute ops i = do
+solve2 :: Vector Instruction -> Int
+solve2 ops = case eval ops of
+               Right i       -> i
+               Left (log, _) -> retry log
+                 where
+                   retry = head . rights . results
+                   results = map (eval . (\c -> ops // [c])) . candidates
+                   candidates = map (second flipJmpNop) . filter (isJmpNop . snd)
+
+isJmpNop :: Instruction -> Bool
+isJmpNop (JMP _) = True
+isJmpNop (NOP _) = True
+isJmpNop _       = False
+
+flipJmpNop :: Instruction -> Instruction
+flipJmpNop (NOP i) = JMP i
+flipJmpNop (JMP i) = NOP i
+flipJmpNop other   = other
+
+
+eval :: Vector Instruction -> Result
+eval ops = evalState (execute 0 ops) initialState
+
+initialState :: CpuState
+initialState = ([], 0)
+
+execute :: Int -> Vector Instruction -> State CpuState Result
+execute i ops = do
   (log, val) <- get
-  if i `elem` log
-     then return val
-     else case ops !! i of
-            NOP _ -> put (i:log, val) >> execute ops (i+1)
-            ACC n -> put (i:log, val + n) >> execute ops (i+1)
-            JMP n -> put (i:log, val) >> execute ops (i+n)
+  if elem i . map fst $ log
+     then return $ Left (log, val)
+     else case ops !? i of
+            Just op@(NOP _) -> put ((i,op):log, val)      >> execute (i+1) ops
+            Just op@(ACC n) -> put ((i,op):log, val + n)  >> execute (i+1) ops
+            Just op@(JMP n) -> put ((i,op):log, val)      >> execute (i+n) ops
+            Nothing         -> return $ Right val
 
-parse :: String -> [Instruction]
-parse str = map (toInstruction . words) $ lines str
+
+parse :: String -> Vector Instruction
+parse = fromList . map (toInstruction . words) . lines
   where
     toInstruction (op:n:_) = case op of
       "nop" -> NOP $ toNum n
@@ -37,14 +71,3 @@ parse str = map (toInstruction . words) $ lines str
                       '+' -> read n
                       '-' -> negate (read n)
                       _   -> error "invalid value"
-
-example = unlines [ "nop +0"
-                  , "acc +1"
-                  , "jmp +4"
-                  , "acc +3"
-                  , "jmp -3"
-                  , "acc -99"
-                  , "acc +1"
-                  , "jmp -4"
-                  , "acc +6"
-                  ]
