@@ -63,7 +63,8 @@ ways of heating my house.
 While taking a walk, I realized the list of differences from part 1 would be
 enough to figure out how many possible combinations there could be. All of the
 puzzle inputs contained differences of either 1 or 3 between each number, and
-the 3's 
+the 3's wouldn't matter. I just needed to know what effect of each run of 1's
+would have on the total count.
 
 I wrote out all the combinations from a simple example, counting the number of
 combinations for each set:
