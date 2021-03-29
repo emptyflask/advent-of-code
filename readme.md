@@ -1,6 +1,6 @@
 # Advent of Code 2020
 
-## Days 1 - 7
+## Days 1 - 7:
 
 I started writing notes on the 8th day, so I'm planning to go back and cover
 the first week when I have a chance.
@@ -95,3 +95,21 @@ two. Also known as the "tribonacci" sequence, apparently.
 So, I mapped the runLengths of ones through my `fib3` function, and multiplied
 them all together. Boom. The example answer matched my result, and running it
 against the full input was successful as well, and instantaneous.
+
+
+## Day 11:
+
+Sort of a game of life simulation but with seating charts. As with all of these
+I'm sure my solution is naive and slow, and I'm working on a rewrite before I
+complete the second part...
+
+
+## Day 12:
+
+Completed this one after a trip to the beach. The most difficult part of it was
+parsing the input correctly; it had been a while since I last worked with
+Parsec. I had also initially used `foldr` instead of `foldl'`, which was
+applying ship instructions in reverse -- this actually worked for part one, but
+since the instructions in part two are order dependant, it was completely wrong
+even on the first instruction. I finally realized my mistake after stepping
+through the solver function with `Debug.Trace`.
