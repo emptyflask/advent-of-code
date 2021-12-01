@@ -1,3 +1,10 @@
+# Advent of Code 2021
+
+## Day 1:
+
+The `windows` function from last year (day 9) ended up being useful already!
+
+
 # Advent of Code 2020
 
 ## Days 1 - 7:
@@ -102,7 +109,7 @@ against the full input was successful as well, and instantaneous.
 Sort of a game of life simulation but with seating charts. As with all of these
 I'm sure my solution is naive and slow, and I'm working on a rewrite before I
 complete the second part...
-
+https://stackoverflow.com/questions/7442892/repeatedly-applying-a-function-until-the-result-is-stable
 
 ## Day 12:
 
@@ -113,3 +120,11 @@ applying ship instructions in reverse -- this actually worked for part one, but
 since the instructions in part two are order dependant, it was completely wrong
 even on the first instruction. I finally realized my mistake after stepping
 through the solver function with `Debug.Trace`.
+
+
+# Advent of Code 2019
+
+## Day 1:
+
+Did this as a warm-up right before the 2021 AoC opened, initially in the REPL.
+I haven't written any Haskell in 9 months besides messing with [xmonad](https://github.com/xmonad/xmonad).
