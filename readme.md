@@ -5,6 +5,13 @@
 The `windows` function from last year (day 9) ended up being useful already!
 
 
+## Day 2:
+
+The kind of problem that makes me appreciate Haskell. Basic parsing, pattern
+matching, and folds.  Luckily I had some parser code to reference in 2020 day
+12, otherwise I'd have to re-read a lot of Text.Parsec documentation.
+
+
 # Advent of Code 2020
 
 ## Days 1 - 7:
@@ -42,6 +49,7 @@ windows m = foldr (zipWith (:)) (repeat []) . take m . tails
 
 take 4 $ windows 3 [1..] == [[1,2,3],[2,3,4],[3,4,5],[4,5,6]]
 ```
+
 
 ## Day 10:
 
@@ -95,6 +103,7 @@ combinations for each set:
 
 ...
 ```
+
 ...and a pattern emerged, `[1, 2, 4, 7, 13, 24, 44, ...]`. It's like the
 Fibonacci sequence, but referencing the previous three numbers instead of the usual
 two. Also known as the "tribonacci" sequence, apparently.
@@ -110,6 +119,7 @@ Sort of a game of life simulation but with seating charts. As with all of these
 I'm sure my solution is naive and slow, and I'm working on a rewrite before I
 complete the second part...
 https://stackoverflow.com/questions/7442892/repeatedly-applying-a-function-until-the-result-is-stable
+
 
 ## Day 12:
 
