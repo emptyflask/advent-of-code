@@ -3,6 +3,21 @@
 ## Day 1:
 
 The `windows` function from last year (day 9) ended up being useful already!
+It bothers me a little that I have two very similar functions, though, `pairs`
+differing from `windows 2` only in its result being a list of tuples instead of
+a list of lists:
+
+```haskell
+pairs :: [a] -> [(a,a)]
+pairs xs@(_:xs') = zip xs xs'
+
+windows :: Int -> [a] -> [[a]]
+windows m = foldr (zipWith (:)) (repeat []) . take m . tails
+```
+
+I could write a filtering function to work on the first two list items, but
+tuples' ability to use `uncurry :: (a -> b -> c) -> (a, b) -> c` is cool, and
+sticking with a 2-element data structure seems like the better thing to do.
 
 
 ## Day 2:
