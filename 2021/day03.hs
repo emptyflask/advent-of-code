@@ -39,6 +39,7 @@ solve2 input = undefined
     -- run i op input' = filter (\b -> (b !! i) == (head $ run op input)) input'
 
 
+
 frequency :: (Ord a) => [a] -> [(a, Int)]
 frequency xs = toList (fromListWith (+) [(x, 1) | x <- xs])
 
